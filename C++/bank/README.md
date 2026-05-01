@@ -1,285 +1,298 @@
-# Лабораторная работа №8 (bank)
+# Laboratory Work 8 (bank)
 
-## Содержание
+## Contents
 
-1. [Содержание](#содержание)
-1. [Задание](#задание)
-    1. [Советы](#советы)
-    1. [Лирическое отступление](#лирическое-отступление)
-1. [Требования к корректности решения](#требования-к-корректности-решения)
-    1. [Базовые требования](#базовые-требования)
-    1. [Дополнительные требования](#дополнительные-требования)
-    1. [Гроссбух](#гроссбух)
-    1. [Блокирующий итератор](#блокирующий-итератор)
-    1. [Сетевой сервер](#сетевой-сервер)
-1. [Бонусное задание](#бонусное-задание)
-1. [Инструкция по сдаче](#инструкция-по-сдаче)
-1. [Система оценки](#система-оценки)
-1. [Сроки сдачи](#сроки-сдачи)
+1. [Contents](#contents)
+1. [Task](#task)
+    1. [Advice](#advice)
+    1. [A Digression](#a-digression)
+1. [Solution Correctness Requirements](#solution-correctness-requirements)
+    1. [Basic Requirements](#basic-requirements)
+    1. [Additional Requirements](#additional-requirements)
+    1. [Ledger](#ledger)
+    1. [Blocking Iterator](#blocking-iterator)
+    1. [Network Server](#network-server)
+1. [Bonus Task](#bonus-task)
+1. [Submission Instructions](#submission-instructions)
+1. [Grading System](#grading-system)
+1. [Submission Deadlines](#submission-deadlines)
 
-## Задание
-Это задание состоит из трёх частей, вы можете выполнить только префикс и [получить частичные баллы](#система-оценки).
+## Task
 
-1. **Гроссбух**.
-   Напишите потокобезопасные (const-thread safe) классы `bank::ledger` (гроссбух), `bank::user`, `bank::transaction`, представляющие игрушечный банк.
-   Каждый пользователь:
-    * Имеет уникальное имя.
-    * Может получить свой текущий баланс в валюте `XTS` и историю транзакций.
-    * Создаётся в момент первого обращения и получает 100 XTS (это такая [тестовая валюта из ISO 4217](https://en.wiktionary.org/wiki/XTS)).
-    * Может перевести любому другому пользователю валюту.
-    * Если при переводе возникает логическая ошибка,
-      выбрасывается исключение-наследник `bank::transfer_error` с детальным `what()` и состояние гроссбуха не меняется.
-2. **Блокирующий итератор**.
-   Добавьте возможность потокобезопасно отслеживать транзакции пользователя в блокирующем режиме при помощи класса `bank::user_transactions_iterator`:
-    * Метод `wait_next_transaction()` блокируется до появления очередной транзакции у пользователя и возвращает её.
-    * Должна быть возможность за одну атомарную операцию посмотреть на текущее состояние пользователя и создать `bank::user_transactions_iterator`.
-      В противном случае некоторые транзакции могут потеряться между чтением состояния и созданием итератора.
-3. **Сетевой сервер**.
-   Напишите TCP-сервер, который создаёт один гроссбух и позволяет TCP-клиентам побыть пользователями банка
-   через протокол с состоянием ([stateful protocol](https://en.wikipedia.org/w/index.php?title=Stateful_protocol&redirect=no)):
-    * Каждый TCP-клиент подключается как один из пользователей и действует от его имени.
-    * Поддерживаются все методы класса `bank::user`, а также сообщения об ошибках.
-    * Используйте `boost::asio::ip::tcp::iostream` для блокирующего взаимодействия с сетью.
-    * TCP-клиенты могут в любой момент подключаться и отключаться, один пользователь может управляться одновременно несколькими клиентами.
+This task consists of three parts. You may implement only a prefix of them and [receive partial credit](#grading-system).
 
-Точные поддерживаемые методы смотрите в тестах, а тонкости их семантики — в требованиях ниже.
+1. **Ledger**.
+   Write const-thread-safe classes `bank::ledger`, `bank::user`, and `bank::transaction` representing a toy bank.
+   Each user:
+    * Has a unique name.
+    * Can get their current balance in the `XTS` currency and their transaction history.
+    * Is created at the moment of first access and receives 100 XTS (this is a [test currency from ISO 4217](https://en.wiktionary.org/wiki/XTS)).
+    * Can transfer currency to any other user.
+    * If a logical error occurs during a transfer,
+      an exception derived from `bank::transfer_error` is thrown with a detailed `what()`, and the ledger state is not changed.
+2. **Blocking iterator**.
+   Add the ability to track a user's transactions in a thread-safe blocking mode using the `bank::user_transactions_iterator` class:
+    * The `wait_next_transaction()` method blocks until the user's next transaction appears, then returns it.
+    * It must be possible to inspect the current user state and create a `bank::user_transactions_iterator` in one atomic operation.
+      Otherwise, some transactions may be lost between reading the state and creating the iterator.
+3. **Network server**.
+   Write a TCP server that creates one ledger and lets TCP clients act as bank users
+   through a [stateful protocol](https://en.wikipedia.org/w/index.php?title=Stateful_protocol&redirect=no):
+    * Each TCP client connects as one of the users and acts on that user's behalf.
+    * All methods of the `bank::user` class are supported, as well as error messages.
+    * Use `boost::asio::ip::tcp::iostream` for blocking network interaction.
+    * TCP clients may connect and disconnect at any moment, and one user may be controlled by several clients at the same time.
 
-### Советы
-* Выполняйте части сверху вниз.
-  * В первой части (гроссбух) вам потребуются только `std::mutex` и `std::unique_lock`/`std::scoped_lock`.
-  * Во второй части (блокирующий итератор) добавится `std::condition_variable`.
-  * В третьей части добавится `std::thread` и `boost::asio::ip::tcp`.
-* Чётко распишите, что у вас защищено какими мьютексами и за какие условия отвечает условная переменная.
-* Будьте осторожны с deadlock'ами, их очень просто получить при переводе денег от пользователя к пользователю.
-* Не рассчитывайте, что выданные автотесты поймают все многопоточные проблемы.
-* Воспользуйтесь thread sanitizer или helgrind.
-  * Осторожно: они могут ложно ругаться на разный порядок блокировки мьютексов или куски стандартной библиотеки.
-  * Ругань на разный порядок блокировки мьютексов можно подавить, передав при запуске параметр `--track-lockorders=no`.
-* Если пишите свои автотесты — делайте их большими и с кучей потоков, которые пытаются одновременно и писать, и читать один и тот же ресурс.
-* Для отладки сетевого сервера используйте `netcat`.
-* Обратите внимание, что блокировка мьютекса не `noexcept`.
-* Помните, что для корректного общения с TCP-клиентом необходимо сбрасывать буфер
-  и регулярно проверять, корректны ли потоки ввода-вывода (вдруг клиент отключился).
-* Если класс `bank::ledger` скучный — развлекитесь с `emplace_hint` и `piecewise_construct`.
-* Осторожно: [`boost::asio::ip::tcp::iostream` может быть не movable конкретно под Clang](https://github.com/chriskohlhoff/asio/issues/997).
-* Может пригодиться конструкция: `friend struct Bar;` внутри структуры `Foo` делает
-  всю структуру `Bar` целиком другом `Foo`.
-  В частности, все методы и поля `Bar` получают доступ к приватным полям и методам `Foo`.
-* Может пригодиться конструкция: `const T*` означает "неконстантный указатель на константный `T`",
-  а вот `T *const` означает "константный указатель на неконстантный `T`".
+See the tests for the exact supported methods, and the requirements below for the subtleties of their semantics.
 
-### Лирическое отступление
-* Операции чтения в многопоточных программах редки, но тут они есть из учебных соображений.
-  * Например, если мы прочитали баланс пользователя при помощи `.balance_xts()`, то мы не можем эти данные никак использовать: баланс мог только что измениться в другом потоке.
-  * Аналогичная проблема есть и с методом `.monitor()`: мы не знаем, с какого момента мы реально начали следить за транзакциями.
-  * Поэтому обычно требуются более высокоуровневые сложные методы вроде `snapshot_transactions`.
-* Так как деньги могут измеряться по-разному, ко всем методам и переменным дописан суффикс — единица измерения `_xts`.
-  * Здесь одна единица измерения и запутаться сложно, но в более сложных программах это важнее.
-    Например: `timeout_millis`, `timeout_micros`, `timeout_ms` (милли или микро?), `timeout_sec`.
-* Автоматические тесты на многопоточность написаны немного коряво:
-  * Из не-главного потока никогда не вызываются `CHECK`/`REQUIRE`, несмотря на то, что `doctest` потокобезопасен.
-    Вместо этого данные только собираются, а проверяются уже в главном потоке.
-  * Это сделано, чтобы можно было запускать автотесты под MinGW.
-    Там нужная конструкция `thread_local` плохо работает последние лет десять (то есть всегда),
-    из-за чего doctest (и другие библиотеки) [могут падать под отладчиком](https://github.com/onqtam/doctest/issues/501#issuecomment-827577621).
-* Было бы здорово научиться выходить из команды `monitor` в сервере, но мы так сделать без извращений не можем:
-  у нас и ввод-вывод через `tcp::iostream` блокирующий (но это полбеды), и итератор блокирующий (это вторые полбеды).
-  То есть мы не можем одной операций ждать либо команды, либо очередной транзакции, обязаны выбирать.
-  * В целом можно было бы заводить на команду `monitor` второй поток, который будет ждать транзакций, и третий поток,
-    который преобразует блокирующий итератор в неблокирующий... Но мы так делать не будем.
+### Advice
 
-## Требования к корректности решения
-### Базовые требования
-Действуют [стандартные требования](../common/).
-Обратите внимание, что состояние гонки (race condition) — UB и запрещается, даже если не стреляет.
+* Implement the parts from top to bottom.
+  * In the first part (ledger), you will only need `std::mutex` and `std::unique_lock`/`std::scoped_lock`.
+  * In the second part (blocking iterator), `std::condition_variable` is added.
+  * In the third part, `std::thread` and `boost::asio::ip::tcp` are added.
+* Clearly describe what is protected by which mutexes and what conditions each condition variable is responsible for.
+* Be careful with deadlocks; they are very easy to get when transferring money from one user to another.
+* Do not rely on the provided autotests to catch all multithreading problems.
+* Use ThreadSanitizer or Helgrind.
+  * Be careful: they may produce false positives about different mutex lock orders or parts of the standard library.
+  * Warnings about different mutex lock orders can be suppressed by passing `--track-lockorders=no` when running.
+* If you write your own autotests, make them large and with many threads that try to read and write the same resource simultaneously.
+* Use `netcat` for debugging the network server.
+* Note that locking a mutex is not `noexcept`.
+* Remember that correct communication with a TCP client requires flushing the buffer
+  and regularly checking whether the input/output streams are still valid, since the client may have disconnected.
+* If the `bank::ledger` class is boring, have some fun with `emplace_hint` and `piecewise_construct`.
+* Be careful: [`boost::asio::ip::tcp::iostream` may specifically be non-movable under Clang](https://github.com/chriskohlhoff/asio/issues/997).
+* The construct `friend struct Bar;` inside a `Foo` structure may be useful: it makes
+  the entire `Bar` structure a friend of `Foo`.
+  In particular, all methods and fields of `Bar` get access to the private fields and methods of `Foo`.
+* The construct `const T*` may be useful: it means "a non-const pointer to a const `T`",
+  while `T *const` means "a const pointer to a non-const `T`".
 
-Максимальное суммарное количество строк (включая пустые) в файлах `.hpp` и `.cpp` — 500.
-Полное авторское решение занимает 403.
+### A Digression
 
-При запуске под Valgrind решение компилируется с флагом `-DEXPECT_VALGRIND`, чтобы тесты стали чуть поменьше.
-При запуске под Address Sanitizer под Linux (но не под macOS) решение компилируется с флагом `-DEXPECT_ASAN`,
-чтобы один конкретный тест стал поменьше и не требовал много памяти на проверяющей машине.
+* Read operations in multithreaded programs are rare, but they are included here for educational reasons.
+  * For example, if we read a user's balance using `.balance_xts()`, we cannot really use that data: the balance may have just changed in another thread.
+  * A similar problem exists with the `.monitor()` method: we do not know from what moment we actually started watching transactions.
+  * That is why higher-level complex methods such as `snapshot_transactions` are usually required.
+* Since money can be measured in different units, all methods and variables have the unit suffix `_xts`.
+  * Here there is only one unit, so it is hard to get confused, but in more complex programs this matters more.
+    For example: `timeout_millis`, `timeout_micros`, `timeout_ms` (milli or micro?), `timeout_sec`.
+* The automatic multithreading tests are written somewhat awkwardly:
+  * `CHECK`/`REQUIRE` are never called from a non-main thread, even though `doctest` is thread-safe.
+    Instead, data is only collected there and then checked in the main thread.
+  * This is done so the autotests can run under MinGW.
+    The required `thread_local` construct has worked poorly there for the last ten years (that is, always),
+    which can make doctest (and other libraries) [crash under a debugger](https://github.com/onqtam/doctest/issues/501#issuecomment-827577621).
+* It would be nice to learn how to exit the `monitor` command on the server, but we cannot do that without contortions:
+  both I/O through `tcp::iostream` is blocking (which is half the problem), and the iterator is blocking (which is the other half).
+  That is, we cannot wait for either a command or the next transaction in one operation; we have to choose.
+  * In general, we could create a second thread for the `monitor` command that waits for transactions, and a third thread
+    that turns the blocking iterator into a non-blocking one... But we will not do that.
 
-### Дополнительные требования
-* Если несколько потоков работают с непересекающимися подмножествами заранее созданных пользователей, они не должны друг другу мешать.
-    * В частности, создать один глобальный мьютекс на все операции со всеми пользователями не прокатит.
-    * А если один поток создаёт нового пользователя, то другие в это время не имеют права обращаться к гроссбуху.
-* Запрещается использовать блокирующий ввод-вывод под мьютексом — он может зависнуть на неопределённое время.
-    * Подсказка: осторожно со `snapshot_transactions`.
-* Разные виды исключений должны иметь разные классы.
-* Запрещается изменять `CMakeLists.txt` и/или добавлять новые файлы.
-  Если очень надо — обсудите с преподавателем.
+## Solution Correctness Requirements
 
-#### Запрещённые приёмы
-Нарушение любого из требований ниже обнуляет баллы в соответствующей части и зависящих от неё.
+### Basic Requirements
 
-* Запрещено костылить синхронизацию потоков через `std::this_thread::sleep_for` и похожие трюки.
-* Блокирующий итератор должен, как правило, использовать блокирующее ожидание (например, через условную переменную), а не активное.
+The [standard requirements](../common/) apply.
+Note that a race condition is UB and is forbidden, even if it does not visibly break anything.
 
-### Гроссбух
-Экземпляр класа `bank::ledger` владеет пользователями соответствующего гроссбуха.
-Метод `get_or_create_user(name)` атомарно возвращает ссылку на пользователя `name`,
-которая валидна, пока живёт гроссбух.
-Если этого пользователя ещё не было, то он добавляется в гроссбух.
-Пользователи в памяти не перемещаются, так что можно использовать указатель на пользователя как идентификатор.
+The maximum total number of lines, including blank lines, in `.hpp` and `.cpp` files is 500.
+The full author's solution takes 403 lines.
 
-Каждый пользователь может сообщить потокобезопасно и за константное время:
-* Своё имя: `.name()`
-* Текущий баланс: `.balance_xts()`, помещается в `int` и неотрицателен.
+When run under Valgrind, the solution is compiled with the `-DEXPECT_VALGRIND` flag so the tests become slightly smaller.
+When run under AddressSanitizer on Linux (but not on macOS), the solution is compiled with the `-DEXPECT_ASAN` flag
+so that one particular test becomes slightly smaller and does not require a lot of memory on the grading machine.
 
-Также должна быть возможность потокобезопасно посмотреть на часть транзакций пользователя, не копируя их все.
-Для этого метод `.snapshot_transactions(f)` принимает функтор `f` и вызывает его под мьютексом,
-передав в качестве параметров транзакции и текущий баланс.
-Так можно прочитать любую часть транзакций без вмешательства со стороны остальных потоков.
-Баланс нужно передавать, чтобы `f` мог его узнать за константное время без вызова `.balance_xts()` (иначе потребуется reentrant mutex).
+### Additional Requirements
 
-Вы можете хранить транзакции и передавать их параметру `snapshot_transactions(f)`
-в произвольном последовательном контейнере.
-Старые транзакции идут в начале.
-Транзакция должна представляться структурой `bank::transaction` с константными публичными полями:
-* `counterparty` — указатель на пользователя-вторую сторону транзакции или `nullptr`,
-  если эта сторона — сам банк (при исходном зачислении денег).
-* `balance_delta_xts` — на сколько изменился баланс пользователя от транзакции.
-* `comment` — произвольный комментарий к транзакции.
+* If several threads work with disjoint subsets of already-created users, they must not interfere with one another.
+    * In particular, creating one global mutex for all operations on all users will not work.
+    * And if one thread is creating a new user, other threads may not access the ledger at that time.
+* Blocking I/O under a mutex is forbidden, because it may hang for an indefinite time.
+    * Hint: be careful with `snapshot_transactions`.
+* Different kinds of exceptions must have different classes.
+* It is forbidden to change `CMakeLists.txt` and/or add new files.
+  If you really need to, discuss it with the instructor.
 
-Метод `.transfer(counterparty, amount_xts, comment)` у пользователя `user`
-атомарно переводит `amount_xts` XTS пользователю `counterparty`.
-После этого у каждого пользователя должна появиться ровно одна новая транзакция.
-Если это сделать невозможно — должно вылететь исключение-наследник класса `bank::transfer_error`
-с подробностями.
-Если `user` не хватает денег, то должно вылететь исключение `bank::not_enough_funds_error`
-с фиксированным сообщением (смотри тесты).
-Это не единственная возможная при переводе ошибка, остальные вам надо сообразить самостоятельно
-исходя из здравого смысла и требований задания.
+#### Forbidden Techniques
 
-### Блокирующий итератор
-Метод `snapshot_transactions(f)` теперь, помимо доступа к транзакциям, атомарно возвращает
-экземпляр класса `user_transactions_iterator`.
+Violating any of the requirements below gives zero points for the corresponding part and the parts that depend on it.
 
-Этот итератор имеет единственный метод `wait_next_transaction`, который возвращает
-очередную транзакцию, которая не попала в `snapshot_transactions`.
-Если такой транзакции ещё не случилось, то блокируется, пока она не появится.
-Так как `snapshot_transactions()` работает атомарно, это позволяет любому потоку
-полностью знать состояние любого пользователя.
-Внутри `snapshot_transactions` можно посмотреть на все транзакции до некоторого момента
-(вызова `snapshot_transactions`),
-а итератор позволяет посмотреть на все транзакции после этого момента.
+* It is forbidden to hack thread synchronization together using `std::this_thread::sleep_for` and similar tricks.
+* The blocking iterator should generally use blocking waiting, such as through a condition variable, rather than active waiting.
 
-Может существовать несколько независимых итераторов одновременно.
+### Ledger
 
-Также к `bank::user` добавляется метод `monitor()`, который просто возвращает итератор,
-позволяющий смотреть на все транзакции с момента вызова `monitor()`.
-Он используется в некоторых тестах, но вообще [является плохим API](#лирическое-отступление).
+An instance of the `bank::ledger` class owns the users of the corresponding ledger.
+The `get_or_create_user(name)` method atomically returns a reference to the user `name`,
+which remains valid while the ledger is alive.
+If that user did not exist yet, it is added to the ledger.
+Users are not moved in memory, so a pointer to a user can be used as an identifier.
 
-### Сетевой сервер
-Консольное приложение запускается так:
+Each user can report, thread-safely and in constant time:
+* Their name: `.name()`
+* Their current balance: `.balance_xts()`, which fits in an `int` and is non-negative.
+
+There must also be a way to inspect part of a user's transactions in a thread-safe way without copying all of them.
+For this, the `.snapshot_transactions(f)` method accepts a functor `f` and calls it under a mutex,
+passing the transactions and the current balance as parameters.
+This lets you read any part of the transactions without interference from other threads.
+The balance must be passed so that `f` can obtain it in constant time without calling `.balance_xts()` (otherwise a reentrant mutex would be required).
+
+You may store transactions and pass them to the `snapshot_transactions(f)` parameter
+in any sequential container.
+Old transactions come first.
+A transaction must be represented by a `bank::transaction` structure with constant public fields:
+* `counterparty`: a pointer to the user on the other side of the transaction, or `nullptr`
+  if that side is the bank itself (during the initial money deposit).
+* `balance_delta_xts`: how much the user's balance changed because of the transaction.
+* `comment`: an arbitrary transaction comment.
+
+The `.transfer(counterparty, amount_xts, comment)` method on a `user`
+atomically transfers `amount_xts` XTS to `counterparty`.
+After that, each user must have exactly one new transaction.
+If this cannot be done, an exception derived from `bank::transfer_error`
+must be thrown with details.
+If `user` does not have enough money, a `bank::not_enough_funds_error` exception
+must be thrown with a fixed message (see the tests).
+This is not the only possible transfer error; you need to infer the others yourself
+from common sense and the task requirements.
+
+### Blocking Iterator
+
+The `snapshot_transactions(f)` method now, in addition to giving access to transactions, atomically returns
+an instance of the `user_transactions_iterator` class.
+
+This iterator has a single method, `wait_next_transaction`, which returns
+the next transaction that did not get into `snapshot_transactions`.
+If such a transaction has not happened yet, it blocks until one appears.
+Because `snapshot_transactions()` works atomically, this allows any thread
+to fully know the state of any user.
+Inside `snapshot_transactions`, you can inspect all transactions up to a certain moment
+(the call to `snapshot_transactions`),
+and the iterator lets you inspect all transactions after that moment.
+
+Several independent iterators may exist at the same time.
+
+The `monitor()` method is also added to `bank::user`; it simply returns an iterator
+that lets you watch all transactions from the moment `monitor()` is called.
+It is used in some tests, but in general [it is a bad API](#a-digression).
+
+### Network Server
+
+The console application is launched as follows:
 
 ```
 ./bank-server <port> <port-file>
 ```
 
-При запуске сразу создаётся TCP-сервер на порту `<port>`.
-`<port>` может быть равен нулю, это так и надо передать в конструктор `tcp::endpoint`,
-тогда `tcp::acceptor` выберет случайный свободный порт — это удобно для автоматического
-тестирования нескольких решений на одной машине параллельно.
-Выбранный порт сервера требуется сохранить в файл `<port-file>`.
-Если не удалось — выведите в стандартный поток ошибок сообщение `Unable to store port to file <port-file>`.
+On startup, it immediately creates a TCP server on the port `<port>`.
+`<port>` may be zero; that is exactly what should be passed to the `tcp::endpoint` constructor,
+and then `tcp::acceptor` will choose a random free port. This is convenient for automatically
+testing several solutions on one machine in parallel.
+The selected server port must be saved to the file `<port-file>`.
+If that fails, print the message `Unable to store port to file <port-file>` to the standard error stream.
 
-Сервер создает себе один глобальный гроссбух, с которым работают все клиенты.
-Банковские пользователи из него никогда не удаляются и не пересоздаются.
-Сервер может пользоваться только описанными в задании публичными методами классов.
+The server creates one global ledger for itself, which all clients work with.
+Bank users are never deleted from it or recreated.
+The server may use only the public class methods described in the task.
 
-Все сообщения сервера выводятся в стандартный поток ввода, сбрасывать буфер после очередного сообщения обязательно:
+All server messages are printed to the standard output stream; flushing the buffer after each message is mandatory:
 
-* В начале работы выведите сообщение `Listening at <endpoint>`,
-  где `<endpoint>` — `acceptor.local_endpoint()`, где доступен сервер локально.
-* При подключении клиента выведите сообщение `Connected <remote> --> <local>`,
-  где `<remote>` и `<local>` — `remote_endpoint()` и `local_endpoint()` для клиента, соответственно.
-  `local_endpoint()` будет частным случаем `acceptor.local_endpoint()`.
-* При отключении клиента (по любой причине) выведите аналогичное `Disconnected <remote> --> <local>`.
+* At the start, print the message `Listening at <endpoint>`,
+  where `<endpoint>` is `acceptor.local_endpoint()`, where the server is available locally.
+* When a client connects, print the message `Connected <remote> --> <local>`,
+  where `<remote>` and `<local>` are `remote_endpoint()` and `local_endpoint()` for the client, respectively.
+  `local_endpoint()` will be a special case of `acceptor.local_endpoint()`.
+* When a client disconnects (for any reason), print the analogous `Disconnected <remote> --> <local>`.
 
-Все TCP-клиенты обрабатываются параллельно в разных потоках.
-Если какой-то клиент отключается, с остальными ничего не происходит.
-Все ответы сервера завершаются переводом строки.
-Каждому клиенту соответствует один банковский пользователь,
-имена всех пользователей непустые и состоят из символов с кодами 33-127.
-С каждомым пользователем может работать несколько клиентов одновременно.
-Сессия с каждым клиентом начинается с авторизации пользователя:
+All TCP clients are handled in parallel in different threads.
+If one client disconnects, nothing happens to the others.
+All server responses end with a newline.
+Each client corresponds to one bank user;
+all user names are non-empty and consist of characters with codes 33-127.
+Each user may be operated by several clients at the same time.
+A session with each client starts with user authorization:
 
-* Сервер: `What is your name?\n`.
-* Клиент: `<username>` и пробельный символ.
-* Сервер: `Hi <username>\n`.
+* Server: `What is your name?\n`.
+* Client: `<username>` and a whitespace character.
+* Server: `Hi <username>\n`.
 
-Дальше сервер ожидает команд от клиента.
-Команды отделяются друг от друга и аргументов пробельными символами:
+After that, the server waits for commands from the client.
+Commands, and their arguments, are separated from each other by whitespace characters:
 
 * `balance`.
-  Ответ — одно целое число (текущий баланс пользователя) и перевод строки.
+  The response is one integer (the user's current balance) and a newline.
 * `transactions <n>`.
-  Ответ — `n` последних транзакций пользователя на `n+2` строках.
-  * Точный формат смотрите в тесте `run-test-server.py`.
-  * Ячейки в строчке таблицы разделяются одним символом табуляции.
-  * Гарантируется, что `<n>` неотрицательно и помещается в `int`.
-  * Если транзакций меньше `n`, то выводятся все транзакции пользователя.
+  The response is the user's last `n` transactions on `n+2` lines.
+  * See the `run-test-server.py` test for the exact format.
+  * Cells in a table row are separated by one tab character.
+  * It is guaranteed that `<n>` is non-negative and fits in an `int`.
+  * If there are fewer than `n` transactions, all of the user's transactions are printed.
 * `monitor <n>`.
-  Аналогично `transactions <n>`, но после последней транзакции
-  сервер не ждёт следующую команду, а начинает бесконечно выводить поток транзакций
-  пользователя.
-  * Это позволяет "в реальном времени" следить за своими транзакциями.
-  * Из этой команды нельзя выйти.
-    Более того, для упрощения не требуется при отключении клиента немедленно выводить сообщение `Disconnected`.
-* `transfer <counterparty> <amount> <comment>` — перевод пользователю `<counterparty>`.
-  * Между `<amount>` и `<comment>` имеется ровно один пробельный символ,
-    `<comment>` непусто и завершается `\n`.
-  * В частности, `<comment>` может содержать пробелы: `transfer Bob 100 Some real comment`.
-  * Ответ — `OK\n` в случае успешного перевода или сообщение об ошибке из `.what()` с переводом строки,
-    если перевод неуспешен.
-  * Так как сервер может пользоваться только публичными методами, если пользователя `<counterparty>` не существовало,
-    он создаётся автоматически в соответствии с поведением метода `get_or_create_user`.
-* Любая другая команда. Ответ — `Unknown command: '<введённая-команда>'\n`.
-  * Например, если пользователь ввёл `hello world\n`, то это трактуется как две неизвестные команды: `hello` и `world`.
+  Similar to `transactions <n>`, but after the last transaction
+  the server does not wait for the next command; instead, it starts endlessly printing the user's transaction stream.
+  * This lets users watch their transactions "in real time".
+  * It is impossible to exit this command.
+    Moreover, for simplicity, it is not required to print the `Disconnected` message immediately when the client disconnects.
+* `transfer <counterparty> <amount> <comment>`: transfer to the user `<counterparty>`.
+  * There is exactly one whitespace character between `<amount>` and `<comment>`,
+    `<comment>` is non-empty and ends with `\n`.
+  * In particular, `<comment>` may contain spaces: `transfer Bob 100 Some real comment`.
+  * The response is `OK\n` if the transfer succeeds, or the error message from `.what()` followed by a newline
+    if the transfer fails.
+  * Since the server may use only public methods, if the user `<counterparty>` did not exist,
+    they are created automatically according to the behavior of `get_or_create_user`.
+* Any other command. The response is `Unknown command: '<entered-command>'\n`.
+  * For example, if the user enters `hello world\n`, it is treated as two unknown commands: `hello` and `world`.
 
-Считаем, что если название команды введено правильно, то все параметры команды также будут корректны.
-Однако соединение с клиентом всё ещё может разорваться в любой момент.
-Также считаем, что в корректной реализации в любой момент времени баланс любого пользователя помещается в `int`.
+We assume that if the command name is entered correctly, then all command parameters are also valid.
+However, the connection with the client may still break at any moment.
+We also assume that in a correct implementation, every user's balance fits in an `int` at every moment in time.
 
-## Бонусное задание
-Это задание можно сдавать только если вы выполнили все части основного задания.
+## Bonus Task
 
-Используйте вместо обычных мьютексов [`std::shared_mutex`](https://en.cppreference.com/w/cpp/thread/shared_mutex),
-чтобы разрешить нескольким потокам одновременно читать константные данные.
-Например, это может быть ускорением, если к одному пользователю постоянно обращаются
-на чтение, а записи редки.
-В этом задании это сомнительный сценарий, но в других многопоточных приложениях может встретиться.
+This task may be submitted only if you have completed all parts of the main task.
 
-## Инструкция по сдаче
-[Схема стандартная](../common/#формат-сдачи): вы должны выполнить
-задание в отдельной ветке своего существующего закрытого репозитория в организации и в нём же создать Pull Request.
-Никаких форков!
-В этом задании должно хватить веб-интерфейса GitHub, если возникают проблемы — попросите практика помочь.
+Use [`std::shared_mutex`](https://en.cppreference.com/w/cpp/thread/shared_mutex) instead of ordinary mutexes
+to allow several threads to read constant data simultaneously.
+For example, this may speed things up if one user is constantly accessed
+for reading and writes are rare.
+This is a questionable scenario in this task, but it can occur in other multithreaded applications.
 
-Если вы хотите сдать только некоторые части задания, закомментируйте соответствующие `#define` в файле `test_utils.hpp`.
+## Submission Instructions
 
-## Система оценки
-[Схема стандартная](../common/#система-оценки), баллы:
+The [standard scheme](../common/#submission-format) applies: you must complete
+the task in a separate branch of your existing private repository in the organization and create a Pull Request there.
+No forks!
+For this task, the GitHub web interface should be enough; if you run into problems, ask the practical instructor for help.
 
-|Выполненные части|Макс. корректность|Макс. стиль|Макс. итог|
+If you want to submit only some parts of the task, comment out the corresponding `#define` directives in `test_utils.hpp`.
+
+## Grading System
+
+The [standard scheme](../common/#grading-system) applies. Points:
+
+|Completed parts|Max. correctness|Max. style|Max. total|
 |---|---|---|---|
 |1  |2  |2  | 4|
 |1-2|4  |3  | 7|
 |1-3|6  |4  |10|
 
-* Вы получаете ноль за часть и связанные с ней, если используете [запрещённые приёмы](#запрещённые-приёмы).
-* Если вы выполнили все части, вы можете получить ещё +1 балл за [бонусное задание](#бонусное-задание), итого 11.
+* You get zero for a part and the parts related to it if you use [forbidden techniques](#forbidden-techniques).
+* If you complete all parts, you may receive +1 point for the [bonus task](#bonus-task), for a total of 11.
 
-## Сроки сдачи
-Задание выдано 5 марта 2026 (четверг).
-Ниже в каждом случае указано московское время.
+## Submission Deadlines
 
-* **Дедлайн сдачи:** 11 марта (среда), **22**:59.
-* Ожидаемый срок проверки: 15 марта (воскресенье).
-* Если первая попытка сдачи достаточно разумна (на усмотрение принимающего),
-  то вы можете сделать ещё попытку исправлений или даже несколько.
-    * Предложение актуально даже если вы получили автоматический ноль за первую попытку.
-    * Выставляется максимум из всех попыток.
-* **Срок исправлений**: **22** марта (воскресенье), **22**:59.
+The assignment was issued on March 5, 2026 (Thursday).
+Moscow time is indicated in each case below.
+
+* **Submission deadline:** March 11 (Wednesday), **22**:59.
+* Expected grading date: March 15 (Sunday).
+* If the first submission attempt is reasonable enough (at the grader's discretion),
+  you may make one more correction attempt, or even several.
+    * This offer is valid even if you received an automatic zero for the first attempt.
+    * The maximum score among all attempts is assigned.
+* **Correction deadline**: March **22** (Sunday), **22**:59.
