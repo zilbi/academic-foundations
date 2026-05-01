@@ -1,0 +1,2 @@
+*:doctest.h
+unusedFunction:bank_test.cpp

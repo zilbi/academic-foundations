@@ -1,0 +1,7 @@
+#ifndef TEST_UTILS_HPP_
+#define TEST_UTILS_HPP_
+
+#define TEST_USER_TRANSACTIONS_ITERATOR
+#define TEST_SERVER
+
+#endif  // TEST_UTILS_HPP_
