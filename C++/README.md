@@ -1,6 +1,6 @@
 # C++
 
-Selected C++ programming work demonstrating object-oriented design, data modeling, and implementation of application logic.
+Selected C++ programming project demonstrating object-oriented design, data modeling, and implementation of application logic.
 
 ## Included work
 
