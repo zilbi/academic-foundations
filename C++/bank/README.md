@@ -16,20 +16,19 @@ A C++ project implementing a simplified banking system with a thread-safe ledger
 
 ## Contents
 
-1. [Contents](#contents)
-1. [Task](#task)
-    1. [Advice](#advice)
-    1. [A Digression](#a-digression)
-1. [Solution Correctness Requirements](#solution-correctness-requirements)
-    1. [Basic Requirements](#basic-requirements)
-    1. [Additional Requirements](#additional-requirements)
-    1. [Ledger](#ledger)
-    1. [Blocking Iterator](#blocking-iterator)
-    1. [Network Server](#network-server)
-1. [Bonus Task](#bonus-task)
-1. [Submission Instructions](#submission-instructions)
-1. [Grading System](#grading-system)
-1. [Submission Deadlines](#submission-deadlines)
+- [Task](#task)
+  - [Advice](#advice)
+  - [A Digression](#a-digression)
+- [Solution Correctness Requirements](#solution-correctness-requirements)
+  - [Basic Requirements](#basic-requirements)
+  - [Additional Requirements](#additional-requirements)
+  - [Ledger](#ledger)
+  - [Blocking Iterator](#blocking-iterator)
+  - [Network Server](#network-server)
+- [Bonus Task](#bonus-task)
+- [Submission Instructions](#submission-instructions)
+- [Grading System](#grading-system)
+- [Submission Deadlines](#submission-deadlines)
 
 ## Task
 
