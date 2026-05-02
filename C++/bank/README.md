@@ -1,4 +1,18 @@
-# Laboratory Work 8 (bank)
+# Banking System Simulation
+
+## Overview
+
+A C++ project implementing a simplified banking system with a thread-safe ledger, user accounts, transaction history, blocking transaction monitoring, and a TCP-based client-server interface.
+
+## Project highlights
+
+- Const-thread-safe bank ledger and user model
+- Money transfers with exception-safe state handling
+- Transaction history and blocking transaction iterator
+- Multithreaded logic using mutexes and condition variables
+- TCP server interface using Boost.Asio
+
+## Original assignment
 
 ## Contents
 
