@@ -1,7 +1,17 @@
 # C++
 
-Selected laboratory work in C++ programming.
+Selected C++ programming work demonstrating object-oriented design, data modeling, and implementation of application logic.
 
-## Included problems
+## Included work
 
-1. [Laboratory Work 8: Bank](./bank/)
+- [Banking System Simulation](./bank)
+
+  Object-oriented C++ project modeling bank clients, accounts, transactions, and core financial operations.
+
+## Skills demonstrated
+
+- Object-oriented programming
+- Class design and encapsulation
+- Data modeling
+- State management
+- Implementation of domain-specific business logic
