@@ -25,10 +25,7 @@ A C++ project implementing a simplified banking system with a thread-safe ledger
   - [Ledger](#ledger)
   - [Blocking Iterator](#blocking-iterator)
   - [Network Server](#network-server)
-- [Bonus Task](#bonus-task)
-- [Submission Instructions](#submission-instructions)
-- [Grading System](#grading-system)
-- [Submission Deadlines](#submission-deadlines)
+
 
 ## Task
 
@@ -264,48 +261,3 @@ Commands, and their arguments, are separated from each other by whitespace chara
 We assume that if the command name is entered correctly, then all command parameters are also valid.
 However, the connection with the client may still break at any moment.
 We also assume that in a correct implementation, every user's balance fits in an `int` at every moment in time.
-
-## Bonus Task
-
-This task may be submitted only if you have completed all parts of the main task.
-
-Use [`std::shared_mutex`](https://en.cppreference.com/w/cpp/thread/shared_mutex) instead of ordinary mutexes
-to allow several threads to read constant data simultaneously.
-For example, this may speed things up if one user is constantly accessed
-for reading and writes are rare.
-This is a questionable scenario in this task, but it can occur in other multithreaded applications.
-
-## Submission Instructions
-
-The [standard scheme](../common/#submission-format) applies: you must complete
-the task in a separate branch of your existing private repository in the organization and create a Pull Request there.
-No forks!
-For this task, the GitHub web interface should be enough; if you run into problems, ask the practical instructor for help.
-
-If you want to submit only some parts of the task, comment out the corresponding `#define` directives in `test_utils.hpp`.
-
-## Grading System
-
-The [standard scheme](../common/#grading-system) applies. Points:
-
-|Completed parts|Max. correctness|Max. style|Max. total|
-|---|---|---|---|
-|1  |2  |2  | 4|
-|1-2|4  |3  | 7|
-|1-3|6  |4  |10|
-
-* You get zero for a part and the parts related to it if you use [forbidden techniques](#forbidden-techniques).
-* If you complete all parts, you may receive +1 point for the [bonus task](#bonus-task), for a total of 11.
-
-## Submission Deadlines
-
-The assignment was issued on March 5, 2026 (Thursday).
-Moscow time is indicated in each case below.
-
-* **Submission deadline:** March 11 (Wednesday), **22**:59.
-* Expected grading date: March 15 (Sunday).
-* If the first submission attempt is reasonable enough (at the grader's discretion),
-  you may make one more correction attempt, or even several.
-    * This offer is valid even if you received an automatic zero for the first attempt.
-    * The maximum score among all attempts is assigned.
-* **Correction deadline**: March **22** (Sunday), **22**:59.
