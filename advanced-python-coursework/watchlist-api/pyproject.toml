@@ -1,0 +1,36 @@
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle error
+    "W",   # pycodestyle warning
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-namings
+    "C",   # flake8-comprehensions
+    "G",   # flake8-logging-format
+    "T20", # flake8-print
+    "PL",  # pylint
+]
+ignore = [
+    "C901",    # too complex
+    "C401",    # unnecessary generator
+    "C402",    # unnecessary generator
+    "PLR0911", # too many return statements
+    "PLR0912", # too many branches
+    "PLR0913", # too many arguments in function definition
+    "PLR2004", # magic value used in comparison
+    "T201",    # print
+]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = false
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
