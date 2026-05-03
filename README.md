@@ -5,6 +5,7 @@ Selected work in mathematics, algorithms, and programming.
 
 - [Discrete Mathematics](./discrete-mathematics/)
 - [Algorithms](./algorithms/)
+- [Algorithms Contest](./algorithms-contest/)
 - [C++](./C++/)
 - [Calculus](./calculus/)
 - [Algebra](./algebra/)
