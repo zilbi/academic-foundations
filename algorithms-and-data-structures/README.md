@@ -6,5 +6,5 @@ This section includes graph algorithms, string algorithms, dynamic data structur
 
 ## Sections
 
-- [`theoretical-problems`](theoretical-problems) — selected problems focused on algorithm design, correctness reasoning, and complexity analysis
-- [`contest-problems`](contest-problems) — selected programming contest problems focused on efficient implementation under constraints
+- [`problem-analysis`](problem-analysis) — selected algorithmic problems focused on solution design, correctness reasoning, and complexity evaluation.
+- [`contest-problems`](contest-problems) — selected programming contest problems focused on efficient implementation under constraints.
