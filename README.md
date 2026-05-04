@@ -1,5 +1,16 @@
 # academic-foundations
-Selected work in mathematics, algorithms, and programming.
+
+## Academic Context
+
+**HSE University, Year 1 (2024–2025)**  
+Intensive curriculum:
+
+| Field | Courses Included | Academic Hours | ECTS |
+|---|---|---:|---:|
+| Rigorous Mathematics | Linear Algebra, Calculus, Discrete Mathematics | 950 | 25 |
+| Computer Science | Algorithms, Python, C++, Software Project | 1064 | 28 |
+
+This repository contains selected work from these mathematics and computer science courses, including problem solutions, programming assignments, and explanatory notes.
 
 ## Sections
 
