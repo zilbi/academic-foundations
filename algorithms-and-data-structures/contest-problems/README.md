@@ -1,4 +1,4 @@
-# Algorithms Contest
+# Contest Problems
 
 Selected programming contest problems in algorithms and data structures.
 

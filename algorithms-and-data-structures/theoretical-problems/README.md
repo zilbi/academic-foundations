@@ -1,4 +1,4 @@
-# Algorithms
+# Theoretical Problems
 
 Selected problems in data structures, graph algorithms, string algorithms, and offline dynamic queries.
 
