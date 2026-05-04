@@ -1,6 +1,8 @@
 # Contest Problems
 
-Selected programming contest problems in algorithms and data structures.
+Selected programming contest problems focused on turning problem statements into efficient implemented solutions.
+
+This section includes compact algorithm implementations, edge-case handling, and solutions designed for contest-style constraints.
 
 ## Included problems
 
