@@ -4,5 +4,5 @@ Selected coursework and contest-style problems in graph algorithms, string algor
 
 ## Sections
 
-- [Theoretical Problems](./theoretical-problems/) - selected theoretical and coursework problems.
-- [Contest Problems](./contest-problems/) - selected programming contest problems.
+- [Theoretical Problems](./theoretical-problems/) - theoretical and coursework problems
+- [Contest Problems](./contest-problems/) - programming contest problems
