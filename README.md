@@ -3,7 +3,7 @@
 ## Academic Context
 
 **HSE University, Year 1 (2024–2025)**  
-Intensive curriculum:
+Technically relevant part of an intensive curriculum:
 
 | Field | Courses Included | Academic Hours | ECTS |
 |---|---|---:|---:|
