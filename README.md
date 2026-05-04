@@ -20,7 +20,7 @@ This repository contains selected work from these mathematics and computer scien
 
 - [Discrete Mathematics](./discrete-mathematics/)
 - [Algorithms and Data Structures](./algorithms-and-data-structures/)
-- [C++](./C++/)
+- [C++ Coursework](./cpp-coursework/)
 - [Advanced Python Coursework](./advanced-python-coursework/)
 - [Calculus](./calculus/)
 - [Algebra](./algebra/)

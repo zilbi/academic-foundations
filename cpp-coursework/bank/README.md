@@ -1,16 +1,31 @@
 # Banking System Simulation
 
+A systems-level C++ laboratory project implementing a thread-safe banking system with user accounts, transaction history, real-time transaction monitoring, and a TCP-based client-server interface.
+
 ## Overview
 
-A C++ project implementing a simplified banking system with a thread-safe ledger, user accounts, transaction history, blocking transaction monitoring, and a TCP-based client-server interface.
+The project models a shared banking ledger accessed concurrently by multiple users and network clients. It focuses on safe state management, synchronization between threads, exception-safe transfers, and a clean public interface for inspecting account state and transaction history.
 
-## Project highlights
+## Key Features
 
-- Const-thread-safe bank ledger and user model
-- Money transfers with exception-safe state handling
-- Transaction history and blocking transaction iterator
-- Multithreaded logic using mutexes and condition variables
-- TCP server interface using Boost.Asio
+- Thread-safe `bank::ledger`, `bank::user`, and `bank::transaction` model.
+- Atomic user creation and account access through the shared ledger.
+- Exception-safe money transfers with rollback on logical errors.
+- Per-user transaction history with snapshot-based inspection.
+- Blocking transaction iterator for real-time monitoring of new transactions.
+- Multithreaded synchronization using mutexes and condition variables.
+- TCP server interface based on Boost.Asio.
+- Parallel client handling, including multiple clients acting on behalf of the same user.
+
+## Skills Demonstrated
+
+- Systems-level C++ design
+- Object-oriented modeling and encapsulation
+- Thread-safe shared state management
+- Deadlock-aware synchronization
+- Exception-safe transaction processing
+- Blocking iterators and condition variables
+- TCP client-server communication with Boost.Asio
 
 ## Original assignment
 
