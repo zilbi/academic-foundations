@@ -1,6 +1,6 @@
 # C++ Coursework
 
-Selected C++ coursework focused on systems-level programming, object-oriented design, concurrency, and networked applications.
+Selected university work focused on systems-level C++ programming, object-oriented design, concurrency, and networked applications.
 
 ## Contents
 
