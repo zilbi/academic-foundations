@@ -1,7 +1,7 @@
 # C++ Coursework
 
-Selected university work in C++ programming.
+Selected university work focused on systems-level C++ programming, object-oriented design, concurrency, and networked applications.
 
 ## Contents
 
-- [`bank`](bank) — systems-level banking simulation involving object-oriented design, concurrency, and networking.
+- [`bank`](bank) — thread-safe banking system with transaction history, blocking monitoring, multithreaded synchronization, and a TCP server interface.
