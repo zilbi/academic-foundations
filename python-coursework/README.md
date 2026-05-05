@@ -1,6 +1,6 @@
 # Python Coursework
 
-Selected university work in Python focused on backend application development, relational data modeling, validation, and automated API testing.
+Selected university work in Python focused on backend engineering, relational data modeling, validation, and automated API testing.
 
 ## Contents
 
@@ -8,7 +8,7 @@ Selected university work in Python focused on backend application development, r
 
 ## Skills Demonstrated
 
-- Python backend development
+- Python backend engineering
 - REST API design with FastAPI
 - Relational data modeling with SQLAlchemy ORM
 - Pydantic validation and structured response schemas
