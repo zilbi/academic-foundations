@@ -2,7 +2,7 @@
 
 ## Overview
 
-Advanced Python coursework project: a REST API for a personal movie watchlist service. The project models genres, movies, users, reviews, and per-user bookmarks, then exposes them through FastAPI endpoints backed by PostgreSQL and SQLAlchemy.
+A Python backend coursework project implementing a REST API for a personal movie watchlist service. The project models genres, movies, users, reviews, and per-user bookmarks, then exposes them through FastAPI endpoints backed by PostgreSQL and SQLAlchemy.
 
 ## Project highlights
 
@@ -16,7 +16,7 @@ Advanced Python coursework project: a REST API for a personal movie watchlist se
 
 ## What this project demonstrates
 
-- Advanced Python backend development
+- Python backend engineering
 - REST API design and endpoint organization
 - Relational data modeling with per-user bookmark state
 - Validation of input and output data with Pydantic
