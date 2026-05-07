@@ -8,14 +8,14 @@ The project models a shared banking ledger accessed concurrently by multiple use
 
 ## Key Features
 
-- Thread-safe `bank::ledger`, `bank::user`, and `bank::transaction` model.
-- Atomic user creation and account access through the shared ledger.
-- Exception-safe money transfers with rollback on logical errors.
-- Per-user transaction history with snapshot-based inspection.
-- Blocking transaction iterator for real-time monitoring of new transactions.
-- Multithreaded synchronization using mutexes and condition variables.
-- TCP server interface based on Boost.Asio.
-- Parallel client handling, including multiple clients acting on behalf of the same user.
+- Thread-safe `bank::ledger`, `bank::user`, and `bank::transaction` model
+- Atomic user creation and account access through the shared ledger
+- Exception-safe money transfers with rollback on logical errors
+- Per-user transaction history with snapshot-based inspection
+- Blocking transaction iterator for real-time monitoring of new transactions
+- Multithreaded synchronization using mutexes and condition variables
+- TCP server interface based on Boost.Asio
+- Parallel client handling, including multiple clients acting on behalf of the same user
 
 ## Skills Demonstrated
 
