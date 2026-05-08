@@ -14,13 +14,13 @@ Technically relevant part of an intensive curriculum:
 
 
 
-This repository contains selected work from these mathematics and computer science courses, including problem solutions, programming assignments, and explanatory notes.
+This repository contains selected work from these mathematics and computer science courses, including linear algebra and calculus problem solutions, programming assignments, and explanatory notes.
 
 ## Sections
 
+- [Algebra](./algebra/)
+- [Calculus](./calculus/)
 - [Discrete Mathematics](./discrete-mathematics/)
 - [Algorithms and Data Structures](./algorithms-and-data-structures/)
 - [C++](./cpp-coursework/)
 - [Python](./python-coursework/)
-- [Calculus](./calculus/)
-- [Algebra](./algebra/)
